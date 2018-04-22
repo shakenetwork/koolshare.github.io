@@ -6,18 +6,6 @@ TITLE=科学上网
 DESCRIPTION=科学上网
 HOME_URL=Main_Ss_Content.asp
 
-
-old_version=`cat version | sed -n 1p`
-old_md5sum=`cat version | sed -n 2p`
-new_md5=`md5sum ${MODULE}.tar.gz`
-# backupz package
-#if [ "$old_version" != "$VERSION" ];then
-  #echo old_version $old_version
-  echo backup VERSION $VERSION
-  mv ${MODULE}.tar.gz ./history/"${MODULE}"_"$VERSION".tar.gz
-  echo $old_version $old_md5sum >> ./history/version
-#fi
-
 # Check and include base
 DIR="$( cd "$( dirname "$BASH_SOURCE[0]" )" && pwd )"
 if [ "$MODULE" == "" ]; then
@@ -37,5 +25,12 @@ fi
 cd $DIR
 
 # do something here
-
 do_build_result
+
+# backup latested package after pack
+backup_version=`cat version | sed -n 1p`
+backup_tar_md5=`cat version | sed -n 2p`
+echo backup VERSION $backup_version
+cp ${MODULE}.tar.gz ./history/${MODULE}_$backup_version.tar.gz
+sed -i "/$backup_version/d" ./history/version
+echo $backup_tar_md5  ${MODULE}_$backup_version.tar.gz >> ./history/version
