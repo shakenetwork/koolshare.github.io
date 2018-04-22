@@ -6,100 +6,17 @@ mkdir -p /koolshare/ss
 
 # 判断路由架构和平台
 case $(uname -m) in
-  armv7l)
-	echo_date 固件平台【koolshare merlin armv7l】符合安装要求，开始安装插件！
-    ;;
-  mips)
-  	echo_date 本插件适用于koolshare merlin armv7l固件平台，mips平台不能安装！！！
-  	echo_date 退出安装！
-    exit 0
-    ;;
-  x86_64)
-	echo_date 本插件适用于koolshare merlin armv7l固件平台，x86_64固件平台不能安装！！！
-	exit 0
-    ;;
-  *)
-  	echo_date 本插件适用于koolshare merlin armv7l固件平台，其它平台不能安装！！！
-  	echo_date 退出安装！
-    exit 0
-    ;;
-esac
-
-upgrade_ss_conf(){
-	nodes=`dbus list ssc|grep port|cut -d "=" -f1|cut -d "_" -f4|sort -n`
-	for node in $nodes
-	do
-		if [ "`dbus get ssconf_basic_use_rss_$node`" == "1" ];then
-			#ssr
-			dbus remove ssconf_basic_ss_obfs_$node
-			dbus remove ssconf_basic_ss_obfs_host_$node
-			dbus remove ssconf_basic_koolgame_udp_$node
-		else
-			if [ -n "`dbus get ssconf_basic_koolgame_udp_$node`" ];then
-				#koolgame
-				dbus remove ssconf_basic_rss_protocol_$node
-				dbus remove ssconf_basic_rss_protocol_param_$node
-				dbus remove ssconf_basic_rss_obfs_$node
-				dbus remove ssconf_basic_rss_obfs_param_$node
-				dbus remove ssconf_basic_ss_obfs_$node
-				dbus remove ssconf_basic_ss_obfs_host_$node
-			else
-				#ss
-				dbus remove ssconf_basic_rss_protocol_$node
-				dbus remove ssconf_basic_rss_protocol_param_$node
-				dbus remove ssconf_basic_rss_obfs_$node
-				dbus remove ssconf_basic_rss_obfs_param_$node
-				dbus remove ssconf_basic_koolgame_udp_$node
-				[ -z "`dbus get ssconf_basic_ss_obfs_$node`" ] && dbus set ssconf_basic_ss_obfs_$node="0"
-			fi
+	armv7l)
+		if [ "`uname -o|grep Merlin`" ] && [ -d "/koolshare" ];then
+			echo_date 固件平台【koolshare merlin armv7l】符合安装要求，开始安装插件！
 		fi
-		dbus remove ssconf_basic_use_rss_$node
-	done
-	
-	use_node=`dbus get ssconf_basic_node`
-	[ -z "$use_node" ] && use_node="1"
-	dbus remove ss_basic_server
-	dbus remove ss_basic_mode
-	dbus remove ss_basic_port
-	dbus remove ss_basic_method
-	dbus remove ss_basic_ss_obfs
-	dbus remove ss_basic_ss_obfs_host
-	dbus remove ss_basic_rss_protocol
-	dbus remove ss_basic_rss_protocol_param
-	dbus remove ss_basic_rss_obfs
-	dbus remove ss_basic_rss_obfs_param
-	dbus remove ss_basic_koolgame_udp
-	dbus remove ss_basic_use_rss
-	dbus remove ss_basic_use_kcp
-	sleep 1
-	[ -n "`dbus get ssconf_basic_server_$node`" ] && dbus set ss_basic_server=`dbus get ssconf_basic_server_$node`
-	[ -n "`dbus get ssconf_basic_mode_$node`" ] && dbus set ss_basic_mode=`dbus get ssconf_basic_mode_$node`
-	[ -n "`dbus get ssconf_basic_port_$node`" ] && dbus set ss_basic_port=`dbus get ssconf_basic_port_$node`
-	[ -n "`dbus get ssconf_basic_method_$node`" ] && dbus set ss_basic_method=`dbus get ssconf_basic_method_$node`
-	[ -n "`dbus get ssconf_basic_ss_obfs_$node`" ] && dbus set ss_basic_ss_obfs=`dbus get ssconf_basic_ss_obfs_$node`
-	[ -n "`dbus get ssconf_basic_ss_obfs_host_$node`" ] && dbus set ss_basic_ss_obfs_host=`dbus get ssconf_basic_ss_obfs_host_$node`
-	[ -n "`dbus get ssconf_basic_rss_protocol_$node`" ] && dbus set ss_basic_rss_protocol=`dbus get ssconf_basic_rss_protocol_$node`
-	[ -n "`dbus get ssconf_basic_rss_protocol_param_$node`" ] && dbus set ss_basic_rss_protocol_param=`dbus get ssconf_basic_rss_protocol_param_$node`
-	[ -n "`dbus get ssconf_basic_rss_obfs_$node`" ] && dbus set ss_basic_rss_obfs=`dbus get ssconf_basic_rss_obfs_$node`
-	[ -n "`dbus get ssconf_basic_rss_obfs_param_$node`" ] && dbus set ss_basic_rss_obfs_param=`dbus get ssconf_basic_rss_obfs_param_$node`
-	[ -n "`dbus get ssconf_basic_koolgame_udp_$node`" ] && dbus set ss_basic_koolgame_udp=`dbus get ssconf_basic_koolgame_udp_$node`
-	[ -n "`dbus get ssconf_basic_use_kcp_$node`" ] && dbus set ss_basic_koolgame_udp=`dbus get ssconf_basic_use_kcp_$node`
-}
-
-SS_VERSION_OLD=`dbus get ss_basic_version_local`
-[ -z "$SS_VERSION_OLD" ] && SS_VERSION_OLD=3.6.5
-ss_comp=`versioncmp $SS_VERSION_OLD 3.6.5`
-if [ -n "$SS_VERSION_OLD" ];then
-	if [ "$ss_comp" == "1" ];then
-		echo_date ！！！！！！！！！！！！！！！！！！！！！！！！！！!
-		echo_date 检测到SS版本号为 $SS_VERSION_OLD !
-		echo_date 从3.6.5开始，SS插件和之前版本的数据格式不完全兼容 !
-		echo_date 此次升级将会尝试升级原先的数据 !
-		echo_date 如果你安装此版本后仍然有问题，请尝试清空ss数据后重新录入 !
-		echo_date ！！！！！！！！！！！！！！！！！！！！！！！！！！!
-		upgrade_ss_conf
-	fi
-fi
+	;;
+	*)
+		echo_date 本插件适用于koolshare merlin armv7l固件平台，你的平台"$(uname -m)"不能安装！！！
+		echo_date 退出安装！
+		exit 0
+	;;
+esac
 
 # 先关闭ss
 if [ "$ss_basic_enable" == "1" ];then
@@ -179,7 +96,6 @@ echo_date 创建一些二进制文件的软链接！
 [ ! -L "/koolshare/bin/base64_decode" ] && ln -s /koolshare/bin/base64_encode /koolshare/bin/base64_decode
 [ ! -L "/koolshare/init.d/S99socks5.sh" ] && ln -sf /koolshare/scripts/ss_socks5.sh /koolshare/init.d/S99socks5.sh
 
-# 设置一些默认值
 echo_date 设置一些默认值
 [ -z "$ss_dns_china" ] && dbus set ss_dns_china=11
 [ -z "$ss_dns_foreign" ] && dbus set ss_dns_foreign=1
@@ -190,13 +106,13 @@ echo_date 设置一些默认值
 
 # 离线安装时设置软件中心内储存的版本号和连接
 CUR_VERSION=`cat /koolshare/ss/version`
+dbus set ss_basic_version="$CUR_VERSION"
 dbus set softcenter_module_shadowsocks_install=1
 dbus set softcenter_module_shadowsocks_version="$CUR_VERSION"
 dbus set softcenter_module_shadowsocks_title="科学上网"
 dbus set softcenter_module_shadowsocks_description="科学上网"
 dbus set softcenter_module_shadowsocks_home_url=Main_Ss_Content.asp
 
-sleep 2
 echo_date 一点点清理工作...
 rm -rf /tmp/shadowsocks* >/dev/null 2>&1
 dbus set ss_basic_install_status="0"
