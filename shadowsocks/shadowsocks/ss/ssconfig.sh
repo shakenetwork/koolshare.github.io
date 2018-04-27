@@ -142,7 +142,9 @@ update_ss(){
 		else
 			echo_date 主服务器在线版本号："$ss_basic_version_web1" 和本地版本号："$ss_basic_version_local" 相同！
 			echo_date 那还更新个毛啊，关闭更新进程!
-			close_in_five
+			sleep 1
+			unset_lock
+			exit 1
 		fi
 	else
 		echo_date 没有检测到主服务器在线版本号,访问github服务器有点问题哦~
@@ -172,7 +174,9 @@ update_ss2(){
 				rm -rf /tmp/shadowsocks* >/dev/null 2>&1
 				sleep 1
 				echo_date 然而只有这一台备用更更新服务器，请尝试离线手动安装...
-				close_in_five
+				sleep 1
+				unset_lock
+				exit 1
 			else
 				echo_date 更新包md5校验一致！ 开始安装！...
 				install_ss
@@ -181,13 +185,17 @@ update_ss2(){
 			echo_date 备用服务器在线版本号："$ss_basic_version_web1" 和本地版本号："$ss_basic_version_local" 相同！
 			sleep 1
 			echo_date 那还更新个毛啊，关闭更新进程!
-			close_in_five
+			sleep 1
+			unset_lock
+			exit 1
 		fi
 	else
 		echo_date 没有检测到备用服务器在线版本号,访问备用服务器有点问题哦，你网络很差欸~
 		sleep 1
 		echo_date 然而只有这一台备用更更新服务器，请尝试离线手动安装...
-		close_in_five
+		sleep 1
+		unset_lock
+		exit 1
 	fi
 }
 # ================================= ss stop ===============================
