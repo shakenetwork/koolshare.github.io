@@ -1,9 +1,9 @@
 #!/bin/sh
 
-# shadowsocks script for HND router with kernel 4.1.27 merlin firmware
+# shadowsocks script for AM380 merlin firmware
 # by sadog (sadoneli@gmail.com) from koolshare.cn
 
-source /koolshare/bin/helper.sh
+source /usr/sbin/helper.sh
 CONFIG=$1
 
 ss_basic_mode=`dbus get ss_basic_mode`
