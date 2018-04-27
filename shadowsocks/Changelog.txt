@@ -1,5 +1,10 @@
 Koolshare Asuswrt-Merlin shadowsocks Changelog
 ===========================================
+3.9.0
+   - add	增加v2ray支持，需要配合虚拟内存；
+   - update	优化国内dns设定时的一些判断；
+   - fix	修复chinadns2提交可能失败的问题；
+
 3.8.9
    - fix	修复负载均衡提交可能被卡住的问题。
 

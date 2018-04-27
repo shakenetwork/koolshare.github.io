@@ -1,8 +1,12 @@
 #! /bin/sh
 
+# shadowsocks script for AM380 merlin firmware
+# by sadog (sadoneli@gmail.com) from koolshare.cn
+
 eval `dbus export ss`
 alias echo_date='echo 【$(TZ=UTC-8 date -R +%Y年%m月%d日\ %X)】:'
 mkdir -p /koolshare/ss
+mkdir -p /tmp/ss_backup
 
 # 判断路由架构和平台
 case $(uname -m) in
@@ -21,13 +25,92 @@ case $(uname -m) in
 	;;
 esac
 
-# 先关闭ss
+upgrade_ss_conf(){
+	nodes=`dbus list ssc|grep port|cut -d "=" -f1|cut -d "_" -f4|sort -n`
+	for node in $nodes
+	do
+		if [ "`dbus get ssconf_basic_use_rss_$node`" == "1" ];then
+			#ssr
+			dbus remove ssconf_basic_ss_obfs_$node
+			dbus remove ssconf_basic_ss_obfs_host_$node
+			dbus remove ssconf_basic_koolgame_udp_$node
+		else
+			if [ -n "`dbus get ssconf_basic_koolgame_udp_$node`" ];then
+				#koolgame
+				dbus remove ssconf_basic_rss_protocol_$node
+				dbus remove ssconf_basic_rss_protocol_param_$node
+				dbus remove ssconf_basic_rss_obfs_$node
+				dbus remove ssconf_basic_rss_obfs_param_$node
+				dbus remove ssconf_basic_ss_obfs_$node
+				dbus remove ssconf_basic_ss_obfs_host_$node
+			else
+				#ss
+				dbus remove ssconf_basic_rss_protocol_$node
+				dbus remove ssconf_basic_rss_protocol_param_$node
+				dbus remove ssconf_basic_rss_obfs_$node
+				dbus remove ssconf_basic_rss_obfs_param_$node
+				dbus remove ssconf_basic_koolgame_udp_$node
+				[ -z "`dbus get ssconf_basic_ss_obfs_$node`" ] && dbus set ssconf_basic_ss_obfs_$node="0"
+			fi
+		fi
+		dbus remove ssconf_basic_use_rss_$node
+	done
+	
+	use_node=`dbus get ssconf_basic_node`
+	[ -z "$use_node" ] && use_node="1"
+	dbus remove ss_basic_server
+	dbus remove ss_basic_mode
+	dbus remove ss_basic_port
+	dbus remove ss_basic_method
+	dbus remove ss_basic_ss_obfs
+	dbus remove ss_basic_ss_obfs_host
+	dbus remove ss_basic_rss_protocol
+	dbus remove ss_basic_rss_protocol_param
+	dbus remove ss_basic_rss_obfs
+	dbus remove ss_basic_rss_obfs_param
+	dbus remove ss_basic_koolgame_udp
+	dbus remove ss_basic_use_rss
+	dbus remove ss_basic_use_kcp
+	sleep 1
+	[ -n "`dbus get ssconf_basic_server_$node`" ] && dbus set ss_basic_server=`dbus get ssconf_basic_server_$node`
+	[ -n "`dbus get ssconf_basic_mode_$node`" ] && dbus set ss_basic_mode=`dbus get ssconf_basic_mode_$node`
+	[ -n "`dbus get ssconf_basic_port_$node`" ] && dbus set ss_basic_port=`dbus get ssconf_basic_port_$node`
+	[ -n "`dbus get ssconf_basic_method_$node`" ] && dbus set ss_basic_method=`dbus get ssconf_basic_method_$node`
+	[ -n "`dbus get ssconf_basic_ss_obfs_$node`" ] && dbus set ss_basic_ss_obfs=`dbus get ssconf_basic_ss_obfs_$node`
+	[ -n "`dbus get ssconf_basic_ss_obfs_host_$node`" ] && dbus set ss_basic_ss_obfs_host=`dbus get ssconf_basic_ss_obfs_host_$node`
+	[ -n "`dbus get ssconf_basic_rss_protocol_$node`" ] && dbus set ss_basic_rss_protocol=`dbus get ssconf_basic_rss_protocol_$node`
+	[ -n "`dbus get ssconf_basic_rss_protocol_param_$node`" ] && dbus set ss_basic_rss_protocol_param=`dbus get ssconf_basic_rss_protocol_param_$node`
+	[ -n "`dbus get ssconf_basic_rss_obfs_$node`" ] && dbus set ss_basic_rss_obfs=`dbus get ssconf_basic_rss_obfs_$node`
+	[ -n "`dbus get ssconf_basic_rss_obfs_param_$node`" ] && dbus set ss_basic_rss_obfs_param=`dbus get ssconf_basic_rss_obfs_param_$node`
+	[ -n "`dbus get ssconf_basic_koolgame_udp_$node`" ] && dbus set ss_basic_koolgame_udp=`dbus get ssconf_basic_koolgame_udp_$node`
+	[ -n "`dbus get ssconf_basic_use_kcp_$node`" ] && dbus set ss_basic_koolgame_udp=`dbus get ssconf_basic_use_kcp_$node`
+}
+
+[ -f "/usr/bin/versioncmp" ] && {
+	SS_VERSION_OLD=`dbus get ss_basic_version_local`
+	[ -z "$SS_VERSION_OLD" ] && SS_VERSION_OLD=3.6.5
+	ss_comp=`/usr/bin/versioncmp $SS_VERSION_OLD 3.6.5`
+	if [ "$ss_comp" == "1" ];then
+		echo_date ！！！！！！！！！！！！！！！！！！！！！！！！！！!
+		echo_date 检测到SS版本号为 $SS_VERSION_OLD !
+		echo_date 从3.6.5开始，SS插件和之前版本的数据格式不完全兼容 !
+		echo_date 此次升级将会尝试升级原先的数据 !
+		echo_date 如果你安装此版本后仍然有问题，请尝试清空ss数据后重新录入 !
+		echo_date ！！！！！！！！！！！！！！！！！！！！！！！！！！!
+		upgrade_ss_conf
+	fi
+}
+
 if [ "$ss_basic_enable" == "1" ];then
 	echo_date 先关闭ss，保证文件更新成功!
 	sh /koolshare/ss/ssconfig.sh stop
 fi
 
-#升级前先删除无关文件
+if [ -n "`ls /koolshare/ss/postscripts/P*.sh 2>/dev/null`" ];then
+	echo_date 备份触发脚本!
+	find /koolshare/ss/postscripts -name "P*.sh" | xargs -i mv {} -f /tmp/ss_backup
+fi
+
 echo_date 清理旧文件
 rm -rf /koolshare/ss/*
 rm -rf /koolshare/scripts/ss_*
@@ -51,6 +134,10 @@ rm -rf /koolshare/bin/client_linux_arm5
 rm -rf /koolshare/bin/chinadns
 rm -rf /koolshare/bin/chinadns1
 rm -rf /koolshare/bin/resolveip
+rm -rf /koolshare/bin/udp2raw
+rm -rf /koolshare/bin/speeder*
+rm -rf /koolshare/bin/v2ray
+rm -rf /koolshare/bin/v2ctl
 rm -rf /koolshare/res/layer
 rm -rf /koolshare/res/shadowsocks.css
 rm -rf /koolshare/res/icon-shadowsocks.png
@@ -67,7 +154,8 @@ find /koolshare/init.d/ -name "*socks5.sh" | xargs rm -rf
 echo_date 开始复制文件！
 cd /tmp
 
-echo_date 复制相关二进制文件！
+echo_date 复制相关二进制文件！此步时间可能较长！
+echo_date 如果长时间没有日志刷新，请等待2分钟后进入插件看是否安装成功..。
 cp -rf /tmp/shadowsocks/bin/* /koolshare/bin/
 chmod 755 /koolshare/bin/*
 
@@ -90,6 +178,12 @@ chmod 755 /koolshare/ss/rules/*
 chmod 755 /koolshare/ss/*
 chmod 755 /koolshare/scripts/ss*
 chmod 755 /koolshare/bin/*
+
+if [ -n "`ls /tmp/ss_backup/P*.sh 2>/dev/null`" ];then
+	echo_date 恢复触发脚本!
+	mkdir -p /koolshare/ss/postscripts
+	find /tmp/ss_backup -name "P*.sh" | xargs -i mv {} -f /koolshare/ss/postscripts
+fi
 
 echo_date 创建一些二进制文件的软链接！
 [ ! -L "/koolshare/bin/rss-tunnel" ] && ln -sf /koolshare/bin/rss-local /koolshare/bin/rss-tunnel
@@ -124,6 +218,6 @@ echo_date 插件安装成功，你为什么这么屌？！
 if [ "$ss_basic_enable" == "1" ];then
 	echo_date 重启ss！
 	dbus set ss_basic_action=1
-	. /koolshare/ss/ssconfig.sh restart
+	sh /koolshare/ss/ssconfig.sh restart
 fi
 echo_date 更新完毕，请等待网页自动刷新！

@@ -109,10 +109,10 @@ function checkCmdRet(){
 				noChange = 0;
 			}
 
-			if(noChange > 50){
+			if(noChange > 500){
 				return false;
 			}else{
-				setTimeout("checkCmdRet();", 200);
+				setTimeout("checkCmdRet();", 250);
 			}
 			
 			retArea.value = response;

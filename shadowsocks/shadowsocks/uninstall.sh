@@ -1,5 +1,8 @@
 #! /bin/sh
 
+# shadowsocks script for AM380 merlin firmware
+# by sadog (sadoneli@gmail.com) from koolshare.cn
+
 sh /koolshare/ss/ssconfig.sh stop
 sh /koolshare/scripts/ss_conf_remove.sh
 sleep 1
@@ -25,6 +28,10 @@ rm -rf /koolshare/bin/client_linux_arm5
 rm -rf /koolshare/bin/chinadns
 rm -rf /koolshare/bin/chinadns1
 rm -rf /koolshare/bin/resolveip
+rm -rf /koolshare/bin/udp2raw
+rm -rf /koolshare/bin/speeder*
+rm -rf /koolshare/bin/v2ray
+rm -rf /koolshare/bin/v2ctl
 rm -rf /koolshare/res/layer
 rm -rf /koolshare/res/shadowsocks.css
 rm -rf /koolshare/res/icon-shadowsocks.png
