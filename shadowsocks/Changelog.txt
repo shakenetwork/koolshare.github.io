@@ -1,5 +1,12 @@
 Koolshare Asuswrt-Merlin shadowsocks Changelog
 ===========================================
+3.9.2
+   - fix	修复v2ray使用非json配置ws_header时，配置文件不通过的问题；
+   - fix	修复v2ray json配置时使用vmess以外的传出协议时候，检测不到v2ray服务器ip地址；
+   - fix	修复v2ray在添加节点时候勾选多路复用 (Mux)，但是切换到帐号设置页面该节点并没有勾选的问题；
+   - fix	修复插件检查更新，如果没有更新会出现flock错误，并且窗口无法自动关闭的问题；
+   - fix	修复有时访问ss服务器本身服务器也走代理的问题；
+
 3.9.1
    - fix	修复3.9.0 出现DNS污染的问题；
 

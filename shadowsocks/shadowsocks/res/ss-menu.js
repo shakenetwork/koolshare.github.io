@@ -516,6 +516,12 @@ function openssHint(itemNum) {
 		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;<b>国外解析通过v2ray服务器转发，国外cdn很好；国内cdn由cdn.txt提供，对cpu负担稍大。。</b>";
 
 		return overlib(statusmenu, OFFSETX, -860, OFFSETY, -290, LEFT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, '');
+	} else if (itemNum == 27) {
+		statusmenu = "</br><font color='#CC0066'><b>1:不勾选（自动生成json）：</b></font>"
+		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;此方式只支持vmess作为传出协议，不支持sock，shadowsocks；提交后会根据你的配置自动生成v2ray的json配置。"
+		statusmenu += "</br></br><font color='#CC0066'><b>1:勾选（自定义json）：</b></font>"
+		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;此方式支持配置v2ray支持的所有传出协议，插件会取你的json的outbound部分，并自动配置透明代理和socks传进协议，以便在路由器上工作。"
+		_caption = "使用json配置";
 	} else if (itemNum == 33) {
 		statusmenu = "填入需要强制用国内DNS解析的域名，一行一个，格式如下：。"
 		statusmenu += "</br>注意：不支持通配符！"

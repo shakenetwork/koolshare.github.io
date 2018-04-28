@@ -132,7 +132,7 @@ function pop_help() {
 				本插件是支持<a target="_blank" href="https://github.com/shadowsocks/shadowsocks-libev" ><u>SS</u></a>、<a target="_blank" href="https://github.com/shadowsocksrr/shadowsocksr-libev"><u>SSR</u></a>、<a target="_blank" href="http://firmware.koolshare.cn/binary/koolgame"><u>KoolGame</u></a>、<a target="_blank" href="https://github.com/v2ray/v2ray-core"><u>V2Ray</u></a>四种客户端的科学上网、游戏加速工具。<br>\
 				本插件仅支持Merlin AM380 2.6.36.4内核的固件，请不要用于其它固件安装。<br>\
 				使用本插件有任何问题，可以前往<a style="color:#e7bd16" target="_blank" href="https://github.com/koolshare/koolshare.github.io/issues"><u>github的issue页面</u></a>反馈~<br><br>\
-				● SS/SSR一键脚本：<a style="color:#e7bd16" target="_blank" href="https://github.com/onekeyshell/kcptun_for_ss_ssr"><u>一键安装KCPTUN for SS/SSR on Linux</u></a><br>\
+				● SS/SSR一键脚本：<a style="color:#e7bd16" target="_blank" href="https://github.com/onekeyshell/kcptun_for_ss_ssr/tree/master"><u>一键安装KCPTUN for SS/SSR on Linux</u></a><br>\
 				● koolgame一键脚本：<a style="color:#e7bd16" target="_blank" href="https://github.com/clangcn/game-server"><u>一键安装koolgame服务器端脚本，完美支持nat2</u></a><br>\
 				● V2Ray一键脚本：<a style="color:#e7bd16" target="_blank" href="https://233blog.com/post/17/"><u>V2Ray 搭建和优化详细图文教程</u></a><br>\
 				● 插件交流：<a style="color:#e7bd16" target="_blank" href="https://t.me/joinchat/AAAAAEC7pgV9vPdPcJ4dJw"><u>加入telegram群组</u></a><br><br>\
@@ -451,6 +451,7 @@ function verifyFields(r) {
 	//v2ray
 	var json_on = E("ss_basic_v2ray_use_json").checked == true;
 	var json_off = E("ss_basic_v2ray_use_json").checked == false;
+	var ws_on = E("ss_basic_v2ray_network").value == "ws" || E("ss_basic_v2ray_network").value == "ws_hd"
 	showhide("pass_tr", (!v2ray_on));
 	showhide("method_tr", (!v2ray_on));
 	showhide("server_tr", (json_off));
@@ -462,7 +463,7 @@ function verifyFields(r) {
 	showhide("v2ray_network_basic_tr", (v2ray_on && json_off));
 	showhide("v2ray_headtype_tcp_basic_tr", (v2ray_on && json_off && E("ss_basic_v2ray_network").value == "tcp"));
 	showhide("v2ray_headtype_kcp_basic_tr", (v2ray_on && json_off && E("ss_basic_v2ray_network").value == "kcp"));
-	showhide("v2ray_network_path_basic_tr", (v2ray_on && json_off && E("ss_basic_v2ray_network").value == "ws" || E("ss_basic_v2ray_network").value == "ws_hd"));
+	showhide("v2ray_network_path_basic_tr", (v2ray_on && json_off && ws_on));
 	showhide("v2ray_network_host_basic_tr", (v2ray_on && json_off && E("ss_basic_v2ray_network").value == "ws_hd"));
 	showhide("v2ray_network_security_basic_tr", (v2ray_on && json_off));
 	showhide("v2ray_mux_enable_basic_tr", (v2ray_on && json_off));
@@ -2751,7 +2752,9 @@ function v2ray_binary_update (){
 																</td>
 															</tr>
 															<tr id="v2ray_use_json_tr" style="display: none;">
-																<th width="35%">使用json配置</th>
+																<th width="35%">
+																	使用json配置&nbsp;&nbsp;<a class="hintstyle" href="javascript:void(0);" onclick="openssHint(27)"><font color="#ffcc00"><u>[说明]</u></font></a>
+																</th>
 																<td>
 																	<input type="checkbox" id="ss_node_table_v2ray_use_json" name="ss_node_table_v2ray_use_json" onclick="verifyFields(this, 1);" >
 																</td>
@@ -3017,7 +3020,9 @@ function v2ray_binary_update (){
 													</td>
 												</tr>
 												<tr id="v2ray_use_json_basic_tr" style="display: none;">
-													<th width="35%">使用json配置</th>
+													<th width="35%">
+														使用json配置&nbsp;&nbsp;<a class="hintstyle" href="javascript:void(0);" onclick="openssHint(27)"><font color="#ffcc00"><u>[说明]</u></font></a>
+													</th>
 													<td>
 														<input type="checkbox" id="ss_basic_v2ray_use_json" name="ss_basic_v2ray_use_json" onclick="verifyFields(this, 1);" value="0">
 													</td>
@@ -3366,9 +3371,7 @@ function v2ray_binary_update (){
 													</td>
 												</tr>
 												<tr id="dns_plan_foreign_game2" style="display: none;">
-												<th width="20%"><a class="hintstyle" href="javascript:void(0);" onclick="openssHint(47)">选择国外DNS</a>
-													<a class="hintstyle" href="javascript:void(0);" onclick="openssHint(47)"><font color="#ffcc00"><u>帮助</u></font></a>
-												</th>
+												<th width="20%"><a class="hintstyle" href="javascript:void(0);" onclick="openssHint(47)">选择国外DNS</a></th>
 													<td>
 														<select id="ss_game2_dns_foreign" name="ss_game2_dns_foreign" class="input_option" onclick="update_visibility();" disabled="disabled" >
 															<option value="1" selected>koolgame内置</option>
