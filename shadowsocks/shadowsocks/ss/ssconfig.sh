@@ -387,7 +387,7 @@ get_dns_name() {
 			fi
 		;;
 		5)
-			echo "chinadns1 + dns2socks上游"
+			echo "chinadns1"
 		;;
 		6)
 			echo "https_dns_proxy"
@@ -974,6 +974,22 @@ get_function_switch() {
 	esac
 }
 
+get_ws_header() {
+	if [ -n "$1" ];then
+		echo {\"Host\": \"$1\"}
+	else
+		echo "null"
+	fi
+}
+
+get_h2_host() {
+	if [ -n "$1" ];then
+		echo [\"$1\"]
+	else
+		echo "null"
+	fi
+}
+
 creat_v2ray_json(){
 	rm -rf "$V2RAY_CONFIG_FILE_TMP"
 	rm -rf "$V2RAY_CONFIG_FILE"
@@ -982,21 +998,29 @@ creat_v2ray_json(){
 		local kcp="null"
 		local tcp="null"
 		local ws="null"
+		local h2="null"
 		local tls="null"
-		
-		[ -z "$ss_basic_v2ray_mux_concurrency" ] && local ss_basic_v2ray_mux_concurrency="null"
 
-		case "$ss_basic_v2ray_network_security" in
-			tls)
-				local tls="{
-				\"allowInsecure\": true,
-				\"serverName\": null
-				}"
-			;;
-			none)
-				local tls="null"
-			;;
-		esac
+		# tcp和kcp下tlsSettings为null，ws和h2下tlsSettings
+		[ -z "$ss_basic_v2ray_mux_concurrency" ] && local ss_basic_v2ray_mux_concurrency=8
+		[ "$ss_basic_v2ray_network_security" == "none" ] && local ss_basic_v2ray_network_security=""
+		if [ "$ss_basic_v2ray_network" == "ws" -o "$ss_basic_v2ray_network" == "h2" ];then
+			case "$ss_basic_v2ray_network_security" in
+				tls)
+					local tls="{
+					\"allowInsecure\": true,
+					\"serverName\": null
+					}"
+				;;
+				*)
+					local tls="null"
+				;;
+			esac
+		fi
+		# incase multi-domain input
+		if [ "`echo $ss_basic_v2ray_network_host | grep ","`" ];then
+			ss_basic_v2ray_network_host=`echo $ss_basic_v2ray_network_host | sed 's/,/", "/g'`
+		fi
 		
 		case "$ss_basic_v2ray_network" in
 			tcp)
@@ -1010,7 +1034,7 @@ creat_v2ray_json(){
 					\"method\": \"GET\",
 					\"path\": [\"/\"],
 					\"headers\": {
-					\"Host\": [\"\"],
+					\"Host\": [\"$ss_basic_v2ray_network_host\"],
 					\"User-Agent\": [\"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.75 Safari/537.36\",\"Mozilla/5.0 (iPhone; CPU iPhone OS 10_0_2 like Mac OS X) AppleWebKit/601.1 (KHTML, like Gecko) CriOS/53.0.2785.109 Mobile/14A456 Safari/601.1.46\"],
 					\"Accept-Encoding\": [\"gzip, deflate\"],
 					\"Connection\": [\"keep-alive\"],
@@ -1051,21 +1075,18 @@ creat_v2ray_json(){
 				}"
 			;;
 			ws)
+				[ -z "$ss_basic_v2ray_network_path" ] && ss_basic_v2ray_network_path="null"
 				local ws="{
 				\"connectionReuse\": true,
 				\"path\": \"$ss_basic_v2ray_network_path\",
-				\"headers\": null
+				\"headers\": $(get_ws_header $ss_basic_v2ray_network_host)
 				}"
 			;;
-			ws_hd)
-				ss_basic_v2ray_network="ws"
-				local ws="{
-				\"connectionReuse\": true,
-				\"path\": \"$ss_basic_v2ray_network_path\",
-				\"headers\": {
-				\"Host\": \"$ss_basic_v2ray_network_host\"
-				}     
-				}"
+			h2)
+				local h2="{
+        		\"path\": \"$ss_basic_v2ray_network_path\",
+        		\"host\": $(get_h2_host $ss_basic_v2ray_network_host)
+      			}"
 			;;
 		esac
 		cat > "$V2RAY_CONFIG_FILE_TMP" <<-EOF
@@ -1090,7 +1111,6 @@ creat_v2ray_json(){
 					"followRedirect": false
 					}
 				},
-
 			EOF
 		else
 			cat >> "$V2RAY_CONFIG_FILE_TMP" <<-EOF
@@ -1141,10 +1161,11 @@ creat_v2ray_json(){
 					"streamSettings": {
 						"network": "$ss_basic_v2ray_network",
 						"security": "$ss_basic_v2ray_network_security",
+						"tlsSettings": $tls,
 						"tcpSettings": $tcp,
 						"kcpSettings": $kcp,
 						"wsSettings": $ws,
-						"tlsSettings": $tls
+						"httpSettings": $h2
 					},
 					"mux": {
 						"enabled": $(get_function_switch $ss_basic_v2ray_mux_enable),

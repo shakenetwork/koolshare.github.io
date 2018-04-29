@@ -400,16 +400,16 @@ function openssHint(itemNum) {
 		_caption = "模式说明";
 		return overlib(statusmenu, OFFSETX, -860, OFFSETY, -290, LEFT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, '');
 	} else if (itemNum == 2) {
-		statusmenu = "此处填入你的SS服务器的地址。</br>建议优先填入<font color='#F46'>IP地址</font>。填入域名，特别是一些服务商给的复杂域名，有时遇到无法解析会导致Problem detected!";
+		statusmenu = "此处填入你的ss/ssr/koolgame服务器的地址。</br>建议优先填入<font color='#F46'>IP地址</font>。填入域名，特别是一些服务商给的复杂域名，有时遇到无法解析会导致国外无法连接!";
 		_caption = "服务器";
 	} else if (itemNum == 3) {
-		statusmenu = "此处填入你的SS服务器的端口";
+		statusmenu = "此处填入你的ss/ssr/koolgame服务器的端口";
 		_caption = "服务器端口";
 	} else if (itemNum == 4) {
-		statusmenu = "此处填入你的SS服务器的密码。</br><font color='#F46'>注意：</font>使用带有特殊字符的密码，可能会导致SS链接不上服务器。";
+		statusmenu = "此处填入你的ss/ssr/koolgame服务器的密码。</br><font color='#F46'>注意：</font>使用带有特殊字符的密码，可能会导致链接不上服务器。";
 		_caption = "服务器密码";
 	} else if (itemNum == 5) {
-		statusmenu = "此处填入你的SS服务器的加密方式。</br><font color='#F46'>建议</font>如果是自己搭建服务器，建议使用对路由器负担比较小的加密方式，例如chacha20,chacha20-ietf等。";
+		statusmenu = "此处填入你的ss/ssr/koolgame服务器的加密方式。</br><font color='#F46'>建议</font>如果是自己搭建服务器，建议使用对路由器负担比较小的加密方式，例如chacha20,chacha20-ietf等。";
 		_caption = "服务器加密方式";
 	} else if (itemNum == 6) {
 		statusmenu = "此处选择你希望UDP的通道。</br>很多游戏都走udp的初衷就是加速udp连接。</br>如果你到vps的udp链接较快，可以选择udp in udp，如果你的运营商封锁了udp，可以选择udp in tcp。";
@@ -522,6 +522,46 @@ function openssHint(itemNum) {
 		statusmenu += "</br></br><font color='#CC0066'><b>1:勾选（自定义json）：</b></font>"
 		statusmenu += "</br>&nbsp;&nbsp;&nbsp;&nbsp;此方式支持配置v2ray支持的所有传出协议，插件会取你的json的outbound部分，并自动配置透明代理和socks传进协议，以便在路由器上工作。"
 		_caption = "使用json配置";
+	} else if (itemNum == 28) {
+		width = "750px";
+		statusmenu = "<b>如果客户端json配置文件内没有此项，此处请留空！</b>"
+		statusmenu += "</br></br><font color='#CC0066'><b>1:传输协议tcp + 伪装类型http：</b></font>"
+		statusmenu += "</br>&nbsp;&nbsp;此参数在客户端json配置文件的【outbound → streamSettings → tcpSettings → headers → Host】位置"
+		statusmenu += "</br>&nbsp;&nbsp;如有多个域名，请用英文逗号隔开，如：www.baidu.com,www.sina.com.cn"
+		statusmenu += "</br></br><font color='#CC0066'><b>2:传输协议ws：</b></font>"
+		statusmenu += "</br>&nbsp;&nbsp;此参数在客户端json配置文件的【outbound → streamSettings → wsSettings → headers → Host】位置"
+		statusmenu += "</br></br><font color='#CC0066'><b>3:传输协议h2：</b></font>"
+		statusmenu += "</br>&nbsp;&nbsp;此参数在客户端json配置文件的【outbound → streamSettings → httpSettings → host】位置"
+		statusmenu += "</br>&nbsp;&nbsp;如有多个域名，请用英文逗号隔开，如：www.baidu.com,www.sina.com.cn"
+		_caption = "伪装域名 (host)";
+		return overlib(statusmenu, OFFSETX, -560, OFFSETY, -290, LEFT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, '');
+	} else if (itemNum == 29) {
+		width = "750px";
+		statusmenu = "<b>如果客户端json配置文件内没有此项，此处请留空！</b></br></br>path的设定应该和服务器端保持一致，值应该和你nginx或者candy的配置内的一致！"
+		statusmenu += "</br></br><font color='#CC0066'><b>1:ws path：</b></font>"
+		statusmenu += "</br>&nbsp;&nbsp;此参数在客户端json配置文件的【outbound → streamSettings → wsSettings → path】位置"
+		statusmenu += "</br></br><font color='#CC0066'><b>2:h2 path：</b></font>"
+		statusmenu += "</br>&nbsp;&nbsp;此参数在客户端json配置文件的【outbound → streamSettings → httpSettings → path】位置"
+		_caption = "路径 (path)";
+		return overlib(statusmenu, OFFSETX, -560, OFFSETY, -290, LEFT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, '');
+	} else if (itemNum == 30) {
+		width = "750px";
+		statusmenu = "<b>此处控制开启或者关闭tls传输</b>"
+		statusmenu += "</br></br>此参数在客户端json配置文件的【outbound → streamSettings → security】位置"
+		_caption = "底层传输安全";
+		return overlib(statusmenu, OFFSETX, -560, OFFSETY, -90, LEFT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, '');
+	} else if (itemNum == 31) {
+		width = "400px";
+		statusmenu = "<b>此处控制开启或者关闭多路复用 (Mux)</b>"
+		statusmenu += "</br></br>此参数在客户端json配置文件的【outbound → mux → enabled】位置"
+		_caption = "多路复用 (Mux)";
+		return overlib(statusmenu, OFFSETX, -560, OFFSETY, -90, LEFT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, '');
+	} else if (itemNum == 32) {
+		width = "750px";
+		statusmenu = "<b>控制Mux并发连接数，默认值：8，如果客户端json配置文件没有请留空</b>"
+		statusmenu += "</br></br>此参数在客户端json配置文件的【outbound → mux → concurrency】位置，如果没有，请留空"
+		_caption = "Mux并发连接数";
+		return overlib(statusmenu, OFFSETX, -560, OFFSETY, -90, LEFT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, '');
 	} else if (itemNum == 33) {
 		statusmenu = "填入需要强制用国内DNS解析的域名，一行一个，格式如下：。"
 		statusmenu += "</br>注意：不支持通配符！"
@@ -540,6 +580,21 @@ function openssHint(itemNum) {
 		statusmenu += "</br></br>如果填入了错误的格式，可能导致dnsmasq启动失败！"
 		statusmenu += "</br></br>如果填入的信息里带有英文逗号的，也会导致dnsmasq启动失败！"
 		_caption = "自定义dnsamsq";
+	} else if (itemNum == 35) {
+		width = "750px";
+		statusmenu = "</br>此参数在客户端json配置文件的【outbound → streamSettings → network】位置"
+		_caption = "传输协议 (network)";
+		return overlib(statusmenu, OFFSETX, -560, OFFSETY, -90, LEFT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, '');
+	} else if (itemNum == 36) {
+		width = "750px";
+		statusmenu = "</br>此参数在客户端json配置文件的【outbound → streamSettings → tcpSettings → header → type】位置，如果没有此参数，则为不伪装"
+		_caption = "tcp伪装类型 (type)";
+		return overlib(statusmenu, OFFSETX, -560, OFFSETY, -90, LEFT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, '');
+	} else if (itemNum == 37) {
+		width = "750px";
+		statusmenu = "</br>此参数在客户端json配置文件的【outbound → streamSettings → kcpSettings → header → type】位置，如果参数为none，则为不伪装"
+		_caption = "kcp伪装类型 (type)";
+		return overlib(statusmenu, OFFSETX, -560, OFFSETY, -290, LEFT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, '');
 	} else if (itemNum == 38) {
 		statusmenu = "填入不需要走代理的外网ip/cidr地址，一行一个，格式如下：。"
 		statusmenu += "</br></br>2.2.2.2"
@@ -579,6 +634,31 @@ function openssHint(itemNum) {
 	} else if (itemNum == 46) {
 		statusmenu = "一些用户的网络拨号可能比较滞后，为了保证SS在路由器开机后能正常启动，可以通过此功能，为ss的启动增加开机延迟。"
 		_caption = "开机启动延迟";
+	} else if (itemNum == 47) {
+		width = "750px";
+		statusmenu = "</br>此参数在客户端json配置文件的【outbound → settings → vnext → users → security】位置"
+		_caption = "加密方式 (security)";
+		return overlib(statusmenu, OFFSETX, -560, OFFSETY, -90, LEFT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, '');
+	} else if (itemNum == 48) {
+		width = "750px";
+		statusmenu = "</br>此参数在客户端json配置文件的【outbound → settings → vnext → users → alterId】位置"
+		_caption = "额外ID (Alterld)";
+		return overlib(statusmenu, OFFSETX, -560, OFFSETY, -90, LEFT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, '');
+	} else if (itemNum == 49) {
+		width = "750px";
+		statusmenu = "</br>此参数在客户端json配置文件的【outbound → settings → vnext → users → id】位置"
+		_caption = "加密方式 (security)";
+		return overlib(statusmenu, OFFSETX, -560, OFFSETY, -90, LEFT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, '');
+	} else if (itemNum == 50) {
+		width = "750px";
+		statusmenu = "</br>此参数在客户端json配置文件的【outbound → settings → vnext → port】位置"
+		_caption = "端口（port）";
+		return overlib(statusmenu, OFFSETX, -560, OFFSETY, -90, LEFT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, '');
+	} else if (itemNum == 51) {
+		width = "750px";
+		statusmenu = "</br>此参数在客户端json配置文件的【outbound → settings → vnext → address】位置"
+		_caption = "地址（address）";
+		return overlib(statusmenu, OFFSETX, -560, OFFSETY, -90, LEFT, STICKY, WIDTH, 'width', CAPTION, _caption, CLOSETITLE, '');
 	} else if (itemNum == 52) {
 		statusmenu = "KCP协议，ss-libev混淆，负载均衡下均不支持UDP！"
 		statusmenu += "</br>请检查你是否启用了其中之一。"
