@@ -2631,7 +2631,7 @@ function v2ray_binary_update (){
 										<div style="margin-top: 0px;text-align: center;font-size: 18px;margin-bottom: 0px;" class="formfontdesc" id="cmdDesc"></div>
 										<!-- this is the popup area for status -->
 										<div id="detail_status"  class="content_status" style="box-shadow: 3px 3px 10px #000;margin-top: 0px;display: none;">
-											<div class="user_title">shadowsocks状态检测</div>
+											<div class="user_title">【科学上网】状态检测</div>
 											<div style="margin-left:15px"><i>&nbsp;&nbsp;目前本功能支持ss相关进程状态和iptables表状态检测。</i></div>
 											<div id="user_tr" style="margin: 10px 10px 10px 10px;width:98%;text-align:center;overflow:hidden">
 												<textarea cols="63" rows="36" wrap="off" id="proc_status" style="width:98%;padding-left:13px;padding-right:33px;border:0px solid #222;font-family:'Lucida Console'; font-size:11px;background: transparent;color:#FFFFFF;outline: none;overflow-x:hidden;" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>

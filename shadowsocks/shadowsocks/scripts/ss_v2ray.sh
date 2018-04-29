@@ -10,7 +10,6 @@ V2RAY_CONFIG_FILE="/koolshare/ss/v2ray.json"
 url_main="https://raw.githubusercontent.com/koolshare/koolshare.github.io/acelan_softcenter_ui/shadowsocks/v2ray_binary"
 url_back="https://koolshare.ngrok.wang/shadowsocks/v2ray_binary"
 
-
 get_latest_version(){
 	rm -rf /tmp/v2ray_latest_info.txt
 	echo_date "检测V2Ray最新版本..."
@@ -25,9 +24,14 @@ get_latest_version(){
 			get_latest_version_backup
 		fi
 		V2VERSION=`cat /tmp/v2ray_latest_info.txt | sed 's/v//g'` || 0
-    	CUR_VER=`v2ray -version 2>/dev/null | head -n 1 | cut -d " " -f2 | sed 's/v//g'` || 0
 		echo_date "检测到V2Ray最新版本：v$V2VERSION"
-		echo_date "当前已安装V2Ray版本：v$CUR_VER"
+		if [ ! -f "/koolshare/bin/v2ray" -o ! -f "/koolshare/bin/v2ctl" ];then
+			echo_date "v2ray安装文件丢失！重新下载！"
+			CUR_VER="0"
+		else
+			CUR_VER=`v2ray -version 2>/dev/null | head -n 1 | cut -d " " -f2 | sed 's/v//g'` || 0
+			echo_date "当前已安装V2Ray版本：v$CUR_VER"
+		fi
 		COMP=`versioncmp $CUR_VER $V2VERSION`
 		if [ "$COMP" == "1" ];then
 			echo_date "V2Ray已安装版本号低于最新版本，开始更新程序..."
@@ -63,9 +67,14 @@ get_latest_version_backup(){
 			exit 1
 		fi
 		V2VERSION=`cat /tmp/v2ray_latest_info.txt | sed 's/v//g'`
-		CUR_VER=`v2ray -version 2>/dev/null | head -n 1 | cut -d " " -f2 | sed 's/v//g'`
 		echo_date "检测到V2Ray最新版本：v$V2VERSION"
-		echo_date "当前已安装V2Ray版本：v$CUR_VER"
+		if [ ! -f "/koolshare/bin/v2ray" -o ! -f "/koolshare/bin/v2ctl" ];then
+			echo_date "v2ray安装文件丢失！重新下载！"
+			CUR_VER="0"
+		else
+			CUR_VER=`v2ray -version 2>/dev/null | head -n 1 | cut -d " " -f2 | sed 's/v//g'` || 0
+			echo_date "当前已安装V2Ray版本：v$CUR_VER"
+		fi
 		COMP=`versioncmp $V2VERSION $CUR_VER`
 		if [ "$COMP" == "1" ];then
 			echo_date "V2Ray已安装版本号低于最新版本，开始更新程序..."

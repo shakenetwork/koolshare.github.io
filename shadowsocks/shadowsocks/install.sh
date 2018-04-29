@@ -204,7 +204,7 @@ echo_date 设置一些默认值
 # 离线安装时设置软件中心内储存的版本号和连接
 CUR_VERSION=`cat /koolshare/ss/version`
 dbus set ss_basic_version="$CUR_VERSION"
-dbus set softcenter_module_shadowsocks_install=1
+dbus set softcenter_module_shadowsocks_install="4"
 dbus set softcenter_module_shadowsocks_version="$CUR_VERSION"
 dbus set softcenter_module_shadowsocks_title="科学上网"
 dbus set softcenter_module_shadowsocks_description="科学上网"
