@@ -21,16 +21,6 @@
             "version": "1.7"
         }, 
         {
-            "build_date": "2017-09-11_00:03:48", 
-            "description": "让测速更简单", 
-            "home_url": "Module_speedtest.asp", 
-            "md5": "058291eb64c151a7f6201ecf476fae28", 
-            "name": "speedtest", 
-            "tar_url": "speedtest/speedtest.tar.gz", 
-            "title": "网络测速", 
-            "version": "0.2.2"
-        }, 
-        {
             "build_date": "2017-09-10_23:58:54", 
             "description": "迅雷快鸟，为上网加速而生~", 
             "home_url": "Module_kuainiao.asp", 
@@ -71,16 +61,6 @@
             "version": "0.2"
         }, 
         {
-            "build_date": "2017-09-10_23:56:38", 
-            "description": "加速apple服务", 
-            "home_url": "Module_appledns.asp", 
-            "md5": "6c7b670ef9451d3c1cb13e1e47b321ba", 
-            "name": "appledns", 
-            "tar_url": "appledns/appledns.tar.gz", 
-            "title": "AppleDNS", 
-            "version": "0.2"
-        }, 
-        {
             "build_date": "2017-09-10_23:56:45", 
             "description": "使用Dnspod的ddns服务", 
             "home_url": "Module_ddnspod.asp", 
@@ -112,7 +92,7 @@
         }
     ], 
     "home_url": "https://raw.githubusercontent.com/koolshare/koolshare.github.io/master", 
-    "md5": "5c1dd26b0aefd4dc2fd682ed109bd25e", 
+    "md5": "bdc002f83dcd56d302331820e2222aea", 
     "tar_url": "softcenter/softcenter.tar.gz", 
     "version": "1.3.8"
 }
