@@ -34,7 +34,7 @@ get_latest_version(){
 		fi
 		COMP=`versioncmp $CUR_VER $V2VERSION`
 		if [ "$COMP" == "1" ];then
-			echo_date "V2Ray已安装版本号低于最新版本，开始更新程序..."
+			[ "$CUR_VER" != "0" ] && echo_date "V2Ray已安装版本号低于最新版本，开始更新程序..."
 			update_now v$V2VERSION
 		else
 			V2RAY_LOCAL_VER=`/koolshare/bin/v2ray -version 2>/dev/null | head -n 1 | cut -d " " -f2`
@@ -77,7 +77,7 @@ get_latest_version_backup(){
 		fi
 		COMP=`versioncmp $V2VERSION $CUR_VER`
 		if [ "$COMP" == "1" ];then
-			echo_date "V2Ray已安装版本号低于最新版本，开始更新程序..."
+			[ "$CUR_VER" != "0" ] && echo_date "V2Ray已安装版本号低于最新版本，开始更新程序..."
 			update_now_backup v$V2VERSION
 		else
 			V2RAY_LOCAL_VER=`/koolshare/bin/v2ray -version 2>/dev/null | head -n 1 | cut -d " " -f2`
