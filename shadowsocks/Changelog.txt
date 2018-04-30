@@ -1,5 +1,15 @@
 Koolshare Asuswrt-Merlin shadowsocks Changelog
 ===========================================
+3.9.5
+   - fix	订阅：修复订阅部分机场时节点重复添加的问题；
+   - fix	订阅：修复订阅时选择走ss，但是却走常规网络下载的问题；
+   - add	v2ray：现在json配置栏里能使用vmess://的链接来添加节点，添加后会自动解析为非json配置
+   - fix	v2ray：修复非json配置tcp + tls下无法工作的问题；
+   - fix	v2ray：修复非json配置ws + path不配置host时不工作的问题；
+   - fix	v2ray：修复服务器使用域名可能导致出现不工作的问题；
+   - fix	v2ray：修复插件重启速度可能变得极慢的问题；
+   - fix	修复插件开机启动nat加载可能过早的问题；
+
 3.9.4
    - fix	修复v2ray非json配置在ws/h2协议下，不配置path和host不能工作的问题；
 

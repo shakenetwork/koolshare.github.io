@@ -110,6 +110,7 @@ restore_conf(){
 	rm -rf /jffs/configs/dnsmasq.d/zzcdn.conf
 	rm -rf /jffs/configs/dnsmasq.d/custom.conf
 	rm -rf /jffs/configs/dnsmasq.d/wblist.conf
+	rm -rf /jffs/configs/dnsmasq.d/ss_host.conf
 	rm -rf /jffs/configs/dnsmasq.conf.add
 	rm -rf /jffs/scripts/dnsmasq.postconf
 	rm -rf /tmp/sscdn.conf
@@ -118,6 +119,11 @@ restore_conf(){
 }
 
 kill_process(){
+	v2ray_process=`pidof v2ray`
+	if [ -n "$v2ray_process" ];then 
+		echo_date 关闭V2Ray进程...
+		killall v2ray >/dev/null 2>&1
+	fi
 	ssredir=`pidof ss-redir`
 	if [ -n "$ssredir" ];then 
 		echo_date 关闭ss-redir进程...
@@ -205,11 +211,6 @@ kill_process(){
 		echo_date 关闭ud2raw进程...
 		killall udp2raw >/dev/null 2>&1
 	fi
-	v2ray_process=`pidof v2ray`
-	if [ -n "$v2ray_process" ];then 
-		echo_date 关闭V2Ray进程...
-		killall v2ray >/dev/null 2>&1
-	fi
 }
 
 # ================================= ss prestart ===========================
@@ -255,7 +256,8 @@ resolv_server_ip(){
 			fi
 
 			if [ -n "$server_ip" ];then
-				echo_date SS服务器的ip地址解析成功：$server_ip.
+				echo_date SS服务器的ip地址解析成功：$server_ip
+				echo "address=/$ss_basic_server/$server_ip" > /jffs/configs/dnsmasq.d/ss_host.conf
 				ss_basic_server="$server_ip"
 				ss_basic_server_ip="$server_ip"
 				dbus set ss_basic_server_ip="$server_ip"
@@ -416,6 +418,9 @@ start_sslocal(){
 }
 
 start_dns(){
+	# Start ss-local
+	[ "$ss_basic_type" != "3" ] && start_sslocal
+	
 	# Start cdns
 	if [ "$ss_foreign_dns" == "1" ];then
 		echo_date 开启cdns，用于dns解析...
@@ -464,7 +469,6 @@ start_dns(){
 	# Start DNS2SOCKS (default)
 	if [ "$ss_foreign_dns" == "3" ] || [ -z "$ss_foreign_dns" ];then
 		[ -z "$ss_foreign_dns" ] && dbus set ss_foreign_dns="3"
-		[ "$ss_basic_type" != "3" ] && start_sslocal
 		echo_date 开启dns2socks，用于dns解析...
 		dns2socks 127.0.0.1:23456 "$ss_dns2socks_user" 127.0.0.1:$DNS_PORT > /dev/null 2>&1 &
 	fi
@@ -484,7 +488,6 @@ start_dns(){
 		elif [ "$ss_basic_type" == "3" ];then
 			echo_date V2Ray下不支持ss-tunnel，改用dns2socks！
 			dbus set ss_foreign_dns=3
-			[ "$ss_basic_type" != "3" ] && start_sslocal
 			echo_date 开启dns2socks，用于dns解析...
 			dns2socks 127.0.0.1:23456 "$ss_dns2socks_user" 127.0.0.1:$DNS_PORT > /dev/null 2>&1 &
 		fi
@@ -492,7 +495,6 @@ start_dns(){
 	
 	#start chinadns1
 	if [ "$ss_foreign_dns" == "5" ];then
-		[ "$ss_basic_type" != "3" ] && start_sslocal
 		echo_date 开启dns2socks，用于chinadns1上游...
 		dns2socks 127.0.0.1:23456 "$ss_chinadns1_user" 127.0.0.1:1055 > /dev/null 2>&1 &
 		echo_date 开启chinadns1，用于dns解析...
@@ -1012,7 +1014,7 @@ creat_v2ray_json(){
 		# tcp和kcp下tlsSettings为null，ws和h2下tlsSettings
 		[ -z "$ss_basic_v2ray_mux_concurrency" ] && local ss_basic_v2ray_mux_concurrency=8
 		[ "$ss_basic_v2ray_network_security" == "none" ] && local ss_basic_v2ray_network_security=""
-		if [ "$ss_basic_v2ray_network" == "ws" -o "$ss_basic_v2ray_network" == "h2" ];then
+		#if [ "$ss_basic_v2ray_network" == "ws" -o "$ss_basic_v2ray_network" == "h2" ];then
 			case "$ss_basic_v2ray_network_security" in
 				tls)
 					local tls="{
@@ -1024,7 +1026,7 @@ creat_v2ray_json(){
 					local tls="null"
 				;;
 			esac
-		fi
+		#fi
 		# incase multi-domain input
 		if [ "`echo $ss_basic_v2ray_network_host | grep ","`" ];then
 			ss_basic_v2ray_network_host=`echo $ss_basic_v2ray_network_host | sed 's/,/", "/g'`
@@ -1153,7 +1155,7 @@ creat_v2ray_json(){
 					"settings": {
 						"vnext": [
 							{
-								"address": "$ss_basic_server",
+								"address": "`dbus get ss_basic_server`",
 								"port": $ss_basic_port,
 								"users": [
 									{
@@ -1163,7 +1165,8 @@ creat_v2ray_json(){
 									}
 								]
 							}
-						]
+						],
+						"servers": null
 					},
 					"streamSettings": {
 						"network": "$ss_basic_v2ray_network",
@@ -1265,6 +1268,7 @@ creat_v2ray_json(){
 
 				if [ -n "$v2ray_server_ip" ];then
 					echo_date "v2ray服务器的ip地址解析成功：$v2ray_server_ip"
+					echo "address=/$v2ray_server/$v2ray_server_ip" > /jffs/configs/dnsmasq.d/ss_host.conf
 					ss_basic_server_ip="$v2ray_server_ip"
 				else
 					echo_date "v2ray服务器的ip地址解析失败!插件将继续运行，域名解析将由v2ray自己进行！"
@@ -1338,6 +1342,7 @@ detect_swap(){
 		echo_date "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 		echo_date "+          你选择了v2ray节点，而当前系统未启用虚拟内存！               +"
 		echo_date "+        v2ray程序对路由器开销极大，请挂载虚拟内存后再开启！            +"
+		echo_date "+       如果使用 ws + tls + web 方案，建议1G虚拟内存，以保证稳定！     +"
 		echo_date "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 		close_in_five
 	fi
@@ -1746,10 +1751,10 @@ disable_ss(){
 	nvram set ss_mode=0
 	dbus set dns2socks=0
 	nvram commit
+	kill_process
 	restore_conf
 	restart_dnsmasq
 	flush_nat
-	kill_process
 	kill_cron_job
 	echo_date ------------------------ Shadowsocks已关闭 ----------------------------
 }
@@ -1759,12 +1764,13 @@ load_nat(){
 	i=120
 	until [ -n "$nat_ready" ]
 	do
-	    i=$(($i-1))
-	    if [ "$i" -lt 1 ];then
-	        echo_date "错误：不能正确加载nat规则!"
-		close_in_five
-	    fi
-	    sleep 2
+		i=$(($i-1))
+		if [ "$i" -lt 1 ];then
+			echo_date "错误：不能正确加载nat规则!"
+			close_in_five
+		fi
+		sleep 1
+		nat_ready=$(iptables -t nat -L PREROUTING -v -n --line-numbers|grep -v PREROUTING|grep -v destination)
 	done
 	echo_date "加载nat规则!"
 	#creat_ipset
@@ -1812,11 +1818,11 @@ apply_ss(){
 	nvram set ss_mode=0
 	dbus set dns2socks=0
 	nvram commit
+	kill_process
 	restore_conf
 	# restart dnsmasq when ss server is not ip or on router boot
-	[ -z "$WAN_ACTION" ] && restart_dnsmasq
+	restart_dnsmasq
 	flush_nat
-	kill_process
 	kill_cron_job
 	echo_date ------------------------ 【科学上网】已关闭 ----------------------------
 	# pre-start
