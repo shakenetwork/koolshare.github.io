@@ -1,5 +1,8 @@
 Koolshare Asuswrt-Merlin shadowsocks Changelog
 ===========================================
+3.9.4
+   - fix	修复v2ray非json配置在ws/h2协议下，不配置path和host不能工作的问题；
+
 3.9.3
    - 说明	此次更新主要针对v2ray非json配置的调整，配置逻辑参照v2rayN windows客户端；
    - update	为了避免混淆，将v2ray 传输协议 (network) 设置ws和ws_header选项合并；

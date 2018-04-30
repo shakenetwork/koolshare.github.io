@@ -990,6 +990,14 @@ get_h2_host() {
 	fi
 }
 
+get_path(){
+	if [ -n "$1" ];then
+		echo \"$1\"
+	else
+		echo "null"
+	fi
+}
+
 creat_v2ray_json(){
 	rm -rf "$V2RAY_CONFIG_FILE_TMP"
 	rm -rf "$V2RAY_CONFIG_FILE"
@@ -1075,16 +1083,15 @@ creat_v2ray_json(){
 				}"
 			;;
 			ws)
-				[ -z "$ss_basic_v2ray_network_path" ] && ss_basic_v2ray_network_path="null"
 				local ws="{
 				\"connectionReuse\": true,
-				\"path\": \"$ss_basic_v2ray_network_path\",
+				\"path\": $(get_path $ss_basic_v2ray_network_path),
 				\"headers\": $(get_ws_header $ss_basic_v2ray_network_host)
 				}"
 			;;
 			h2)
 				local h2="{
-        		\"path\": \"$ss_basic_v2ray_network_path\",
+        		\"path\": $(get_path $ss_basic_v2ray_network_path),
         		\"host\": $(get_h2_host $ss_basic_v2ray_network_host)
       			}"
 			;;
