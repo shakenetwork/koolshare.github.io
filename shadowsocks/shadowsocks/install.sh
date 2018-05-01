@@ -11,12 +11,7 @@ mkdir -p /tmp/ss_backup
 # 判断路由架构和平台
 case $(uname -m) in
 	armv7l)
-		if [ "`uname -o|grep Merlin`" ] && [ -d "/koolshare" ];then
-			echo_date 固件平台【koolshare merlin armv7l】符合安装要求，开始安装插件！
-		else
-			echo_date 本插件适用于koolshare merlin armv7l固件平台，你的平台不能安装！！！
-			exit 1
-		fi
+		echo_date 固件平台【koolshare merlin armv7l】符合安装要求，开始安装插件！
 	;;
 	*)
 		echo_date 本插件适用于koolshare merlin armv7l固件平台，你的平台"$(uname -m)"不能安装！！！
