@@ -439,7 +439,7 @@ function appUninstallModule(moduleInfo) {
                 '</dd>',
                 '<dt class="icon-title">#{title}</dt>',
                 '<dd class="icon-desc">',
-                    '<a class="text" href="/#{home_url}">',
+                    '<a class="text" href="/#{home_url}" #{target}>',
                         '#{description}',
                     '</a>',
                     '<div class="opt">',
@@ -589,7 +589,11 @@ function softceterInitData(data) {
         db_softcenter_["softcenter_version"] = "0.0";
     }
     $("#spnCurrVersion").html(db_softcenter_["softcenter_version"]);
-
+	var jff2_scripts="<% nvram_get("jffs2_scripts"); %>";
+	if(jff2_scripts != 1){
+		
+		$('#software_center_message').html('<h2><font color="#FF9900">错误！</font></h2><h2>软件中心不可用！因为你没有开启Enable JFFS custom scripts and configs选项！</h2><h2>请前往【系统管理】-<a href="Advanced_System_Content.asp"><u><em>【系统设置】</em></u></a>开启此选项再使用软件中心！！</h2>')
+	}else{
         init(function () {
             toggleAppPanel(1);
         //一刷新界面是否就正在插件在安装.
@@ -623,10 +627,10 @@ function softceterInitData(data) {
             appInstallModule(softInfo[name]);
 
         });
-
+	}
     });
-var enable_ss = "<% nvram_get("enable_ss"); %>";
-var enable_soft = "<% nvram_get("enable_soft"); %>";
+
+
 function menu_hook() {
 	tabtitle[tabtitle.length -1] = new Array("", "软件中心", "离线安装");
 	tablink[tablink.length -1] = new Array("", "Main_Soft_center.asp", "Main_Soft_setting.asp");
@@ -749,7 +753,7 @@ function notice_show(){
 
                                                     <tr bgcolor="#444f53" width="235px">
                                                         <td colspan="4" id="IconContainer">
-                                                            <div style="text-align:center; line-height: 4em;">更新中...</div>
+                                                            <div id="software_center_message" style="text-align:center; line-height: 4em;">更新中...</div>
                                                         </td>
                                                     </tr>
                                                     <tr height="10px">
