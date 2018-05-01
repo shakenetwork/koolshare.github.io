@@ -97,7 +97,9 @@ close_in_five(){
 	sleep 1
 	echo_date 0
 	dbus set ss_basic_enable="0"
-	disable_ss
+	disable_ss >/dev/null
+	echo_date "插件已关闭！！"
+	echo_date ======================= 梅林固件 - 【科学上网】 ========================
 	unset_lock
 	exit
 }
@@ -107,7 +109,6 @@ restore_conf(){
 	echo_date 删除ss相关的名单配置文件.
 	rm -rf /jffs/configs/dnsmasq.d/gfwlist.conf
 	rm -rf /jffs/configs/dnsmasq.d/cdn.conf
-	rm -rf /jffs/configs/dnsmasq.d/zzcdn.conf
 	rm -rf /jffs/configs/dnsmasq.d/custom.conf
 	rm -rf /jffs/configs/dnsmasq.d/wblist.conf
 	rm -rf /jffs/configs/dnsmasq.d/ss_host.conf
@@ -1334,20 +1335,6 @@ start_v2ray(){
 	echo_date v2ray启动成功，pid：$V2PID
 }
 
-detect_swap(){
-	SWAPSTATUS=`free|grep Swap|awk '{print $2}'`
-	if [ "$SWAPSTATUS" != "0" ];then
-		echo_date "你选择了v2ray节点，当前系统已经启用虚拟内存！！符合启动条件！"
-	else
-		echo_date "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-		echo_date "+          你选择了v2ray节点，而当前系统未启用虚拟内存！               +"
-		echo_date "+        v2ray程序对路由器开销极大，请挂载虚拟内存后再开启！            +"
-		echo_date "+       如果使用 ws + tls + web 方案，建议1G虚拟内存，以保证稳定！     +"
-		echo_date "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-		close_in_five
-	fi
-}
-
 write_cron_job(){
 	sed -i '/ssupdate/d' /var/spool/cron/crontabs/* >/dev/null 2>&1
 	if [ "1" == "$ss_basic_rule_update" ]; then
@@ -1745,9 +1732,9 @@ set_ulimit(){
 }
 
 disable_ss(){
-	echo_date ============ 梅林固件 - shadowsocks by sadoneli\&Xiaobao =============
+	echo_date ======================= 梅林固件 - 【科学上网】 ========================
 	echo_date
-	echo_date ------------------------- 关闭Shadowsocks ----------------------------
+	echo_date ------------------------- 关闭【科学上网】 -----------------------------
 	nvram set ss_mode=0
 	dbus set dns2socks=0
 	nvram commit
@@ -1756,7 +1743,7 @@ disable_ss(){
 	restart_dnsmasq
 	flush_nat
 	kill_cron_job
-	echo_date ------------------------ Shadowsocks已关闭 ----------------------------
+	echo_date ------------------------ 【科学上网】已关闭 ----------------------------
 }
 
 load_nat(){
@@ -1807,13 +1794,50 @@ ss_pre_stop(){
 	done
 }
 
+detect(){
+	# 检测jffs2脚本是否开启，如果没有开启，将会影响插件的自启和DNS部分（dnsmasq.postconf）
+	if [ "`nvram get jffs2_scripts`" != "1" ];then
+		echo_date "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+		echo_date "+     发现你未开启Enable JFFS custom scripts and configs选项！     +"
+		echo_date "+    【软件中心】和【科学上网】插件都需要此项开启才能正常使用！！         +"
+		echo_date "+     请前往【系统管理】- 【系统设置】去开启，并重启路由器后重试！！      +"
+		echo_date "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+		close_in_five
+	fi
+	
+	#检测v2ray模式下是否启用虚拟内存
+	if [ "$ss_basic_type" == "3" ];then
+		SWAPSTATUS=`free|grep Swap|awk '{print $2}'`
+		if [ "$SWAPSTATUS" != "0" ];then
+			echo_date "你选择了v2ray节点，当前系统已经启用虚拟内存！！符合启动条件！"
+		else
+			echo_date "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+			echo_date "+          你选择了v2ray节点，而当前系统未启用虚拟内存！               +"
+			echo_date "+        v2ray程序对路由器开销极大，请挂载虚拟内存后再开启！            +"
+			echo_date "+       如果使用 ws + tls + web 方案，建议1G虚拟内存，以保证稳定！     +"
+			echo_date "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+			close_in_five
+		fi
+	fi
+	
+	# 检测是否在lan设置中是否自定义过dns,如果有给干掉
+	if [ -n "`nvram get dhcp_dns1_x`" ];then
+		nvram unset dhcp_dns1_x
+		nvram commit
+	fi
+	if [ -n "`nvram get dhcp_dns2_x`" ];then
+		nvram unset dhcp_dns1_x
+		nvram commit
+	fi
+}
+
 apply_ss(){
 	# router is on boot
 	WAN_ACTION=`ps|grep /jffs/scripts/wan-start|grep -v grep`
 	# now stop first
-	echo_date ============== 梅林固件 - 【科学上网】 by sadoneli\&Xiaobao ==============
+	echo_date ======================= 梅林固件 - 【科学上网】 ========================
 	echo_date
-	echo_date ------------------------- 关闭【科学上网】 -----------------------------
+	echo_date ------------------------- 启动【科学上网】 -----------------------------
 	ss_pre_stop
 	nvram set ss_mode=0
 	dbus set dns2socks=0
@@ -1824,12 +1848,12 @@ apply_ss(){
 	restart_dnsmasq
 	flush_nat
 	kill_cron_job
-	echo_date ------------------------ 【科学上网】已关闭 ----------------------------
+	#echo_date ------------------------ 【科学上网】已关闭 ----------------------------
 	# pre-start
 	ss_pre_start
 	# start
-	echo_date ------------------------- 启动 【科学上网】 ----------------------------
-	[ "$ss_basic_type" == "3" ] && detect_swap
+	#echo_date ------------------------- 启动 【科学上网】 ----------------------------
+	detect
 	resolv_server_ip
 	ss_arg
 	creat_ipset
@@ -1910,7 +1934,7 @@ stop)
 	echo_date 你已经成功关闭shadowsocks服务~
 	echo_date See you again!
 	echo_date
-	echo_date ============ 梅林固件 - 【科学上网】 by sadoneli\&Xiaobao =============
+	echo_date ======================= 梅林固件 - 【科学上网】 ========================
 	#get_status >> /tmp/ss_start.txt
 	unset_lock
 	;;
@@ -1922,7 +1946,7 @@ restart)
 	echo_date
 	echo_date "Across the Great Wall we can reach every corner in the world!"
 	echo_date
-	echo_date ============ 梅林固件 - 【科学上网】 by sadoneli\&Xiaobao =============
+	echo_date ======================= 梅林固件 - 【科学上网】 ========================
 	# creat nat locker
 	# [ ! -f "/tmp/shadowsocks.nat_lock" ] && touch /tmp/shadowsocks.nat_lock
 	#get_status >> /tmp/ss_start.txt

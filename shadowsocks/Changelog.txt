@@ -1,5 +1,11 @@
 Koolshare Asuswrt-Merlin shadowsocks Changelog
 ===========================================
+3.9.6
+   - update	增加对 Enable JFFS custom scripts and configs选项是否开启的检测；
+   			merlin固件软件中心诞生以来就是依赖这个 Enable JFFS custom scripts and configs这个选项的开启的，
+   			如果此处没有开启，会影响软件中心内所有插件的开机启动，还会影响【科学上网】插件的dnsmasq的配置，导致dns污染等问题。
+   - fix	修复部分机型安装提示平台不符合安装需求的问题。
+   -update	优化一些日志显示。
 3.9.5
    - fix	订阅：修复订阅部分机场时节点重复添加的问题；
    - fix	订阅：修复订阅时选择走ss，但是却走常规网络下载的问题；
