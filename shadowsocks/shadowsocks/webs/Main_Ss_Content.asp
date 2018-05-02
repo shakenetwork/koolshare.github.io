@@ -2536,7 +2536,7 @@ function refresh_acl_html() {
 			code = code + '<option value="5" selected>全局代理模式</option>';
 		} else if (ssmode == 6) {
 			code = code + '<option value="0">不通过代理</option>';
-			code = code + '<option value="5" selected>回国模式</option>';
+			code = code + '<option value="6" selected>回国模式</option>';
 		}
 		code = code + '</select>';
 		code = code + '</td>';
