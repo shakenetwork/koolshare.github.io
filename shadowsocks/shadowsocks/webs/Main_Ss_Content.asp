@@ -61,7 +61,7 @@ function hide_elem(){
 function detect(){
 	var jff2_scripts="<% nvram_get("jffs2_scripts"); %>";
 	var sw_mode="<% nvram_get("sw_mode"); %>";
-	var dnsfilter_mode="<% nvram_get("dnsfilter_mode"); %>";
+	var dnsfilter_enable="<% nvram_get("dnsfilter_enable"); %>";
 	var fw_version="<% nvram_get("extendno"); %>";
 	var fw_version=parseFloat("<% nvram_get("extendno"); %>".split("X")[1]).toFixed(1);
 	if(jff2_scripts != 1){ //没有开启 JFFS scripts选项
@@ -74,7 +74,7 @@ function detect(){
 		E("warn_msg_1").style.display = "";
 		$('#warn_msg_1').html('<h2><font color="#FF9900">错误！</font></h2><h2>【科学上网】插件不可用！因为你的设备工作在非路由模式下！</h2><h2>请前往【系统管理】-<a href="Advanced_OperationMode_Content.asp"><u><em>【操作模式】</em></u></a>中选择无线路由器模式！才能正常使用本插件！</h2>');
 	}
-	if(dnsfilter_mode == 1){ //开启了DNSFilter
+	if(dnsfilter_enable == 1){ //开启了DNSFilter
 		hide_elem();
 		E("warn_msg_1").style.display = "";
 		$('#warn_msg_1').html('<h2><font color="#FF9900">错误！</font></h2><h2>【科学上网】插件不可用！因为开启了DNS过滤！</h2><h2>请前往【智能网络卫士】-<a href="DNSFilter.asp"><u><em>【DNS Filtering】</em></u></a>中关闭DNS过滤！才能正常使用本插件！</h2>');

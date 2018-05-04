@@ -1,6 +1,6 @@
 Koolshare Asuswrt-Merlin shadowsocks Changelog
 ===========================================
-3.9.7
+3.9.7 - 3.9.8
    - update	更新ssrr二进制为最新编译，版本2.5.3；
    - update	更新haproxy到1.8.8；
    - fix	修复访问控制配置出国模式后，实际走全局模式的bug；
