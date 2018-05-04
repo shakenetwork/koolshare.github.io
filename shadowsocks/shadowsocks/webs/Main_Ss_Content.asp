@@ -84,10 +84,10 @@ function detect(){
 		E("warn_msg_1").style.display = "";
 		$('#warn_msg_1').html('<h2><font color="#FF9900">错误！</font></h2><h2>【科学上网】插件不可用！因为你的固件版本低于X7.2！</h2><h2>请前往<a href="http://koolshare.cn/forum-96-1.html" target="_blank"><u><em>【koolshare论坛】</em></u></a>下载并更新最新固件！</h2>');
 	}
-	if(db_ss["ss_basic_use_kcp"] == 1){
-		E("warn_msg_2").style.display = "";
-		$('#warn_msg_2').html('<h2><font color="#FF9900">提醒：</font>你开启了KCP加速，建议挂载虚拟内存以保证kcptun程序运行稳定！</h2>');
-	}
+	//if(db_ss["ss_basic_use_kcp"] == 1){
+	//	E("warn_msg_2").style.display = "";
+	//	$('#warn_msg_2').html('<h2><font color="#FF9900">提醒：</font>你开启了KCP加速，建议挂载虚拟内存以保证kcptun程序运行稳定！</h2>');
+	//}
 }
 
 function hook_event() {
