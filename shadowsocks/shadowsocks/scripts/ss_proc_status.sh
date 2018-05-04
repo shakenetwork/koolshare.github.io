@@ -89,10 +89,10 @@ echo_version(){
 	echo "ss-tunnel		3.1.3 		2018年04月15日编译"
 	echo "ss-local		3.1.3		2018年04月15日编译"
 	echo "obfs-local		0.0.5		2018年04月15日编译"
-	echo "ssrr-redir		3.5.2 		2017年11月13日编译"
-	echo "ssrr-tunnel		3.5.2 		2017年11月13日编译"
-	echo "ssrr-local		3.5.2 		2017年11月13日编译"
-	echo "haproxy			1.8.1 		2017年11月13日编译"
+	echo "ssrr-redir		3.5.3 		2018年05月03日编译"
+	echo "ssrr-tunnel		3.5.3 		2018年05月03日编译"
+	echo "ssrr-local		3.5.3 		2018年05月03日编译"
+	echo "haproxy			1.8.8 		2018年05月03日编译"
 	echo "dns2socks		V2.0 	"
 	echo "cdns			1.0 		2017年12月09日编译"
 	echo "chinadns1		1.3.2 		2017年12月09日编译"
@@ -234,7 +234,8 @@ check_status(){
 }
 
 if [ "$ss_basic_enable" == "1" ];then
-	check_status > /tmp/ss_proc_status.log 2>&1
+	echo "" > /tmp/ss_proc_status.log 2>&1
+	check_status >> /tmp/ss_proc_status.log 2>&1
 else
 	echo 插件尚未启用！> /tmp/ss_proc_status.log 2>&1
 fi

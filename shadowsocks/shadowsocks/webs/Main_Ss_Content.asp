@@ -44,7 +44,50 @@ function init() {
 	toggle_func();
 	version_show();
 	hook_event();
+	detect();
 	setTimeout("get_ss_status_data()", 500);
+}
+
+function hide_elem(){
+	E("head_illustrate").style.display = "none";
+	E("ss_switch_show").style.display = "none";
+	E("ss_status1").style.display = "none";
+	E("tablets").style.display = "none";
+	E("tablet_1").style.display = "none";
+	E("apply_button").style.display = "none";
+	E("ss_switch_show").style.display = "none";
+}
+
+function detect(){
+	var jff2_scripts="<% nvram_get("jffs2_scripts"); %>";
+	var sw_mode="<% nvram_get("sw_mode"); %>";
+	var dnsfilter_mode="<% nvram_get("dnsfilter_mode"); %>";
+	var fw_version="<% nvram_get("extendno"); %>";
+	var fw_version=parseFloat("<% nvram_get("extendno"); %>".split("X")[1]).toFixed(1);
+	if(jff2_scripts != 1){ //没有开启 JFFS scripts选项
+		hide_elem();
+		E("warn_msg_1").style.display = "";
+		$('#warn_msg_1').html('<h2><font color="#FF9900">错误！</font></h2><h2>【科学上网】插件不可用！因为你没有开启Enable JFFS custom scripts and configs选项！</h2><h2>请前往【系统管理】-<a href="Advanced_System_Content.asp"><u><em>【系统设置】</em></u></a>开启此选项再使用软件中心！！</h2>');
+	}
+	if(sw_mode != 1){ //使用的不是路由模式
+		hide_elem();
+		E("warn_msg_1").style.display = "";
+		$('#warn_msg_1').html('<h2><font color="#FF9900">错误！</font></h2><h2>【科学上网】插件不可用！因为你的设备工作在非路由模式下！</h2><h2>请前往【系统管理】-<a href="Advanced_OperationMode_Content.asp"><u><em>【操作模式】</em></u></a>中选择无线路由器模式！才能正常使用本插件！</h2>');
+	}
+	if(dnsfilter_mode == 1){ //开启了DNSFilter
+		hide_elem();
+		E("warn_msg_1").style.display = "";
+		$('#warn_msg_1').html('<h2><font color="#FF9900">错误！</font></h2><h2>【科学上网】插件不可用！因为开启了DNS过滤！</h2><h2>请前往【智能网络卫士】-<a href="DNSFilter.asp"><u><em>【DNS Filtering】</em></u></a>中关闭DNS过滤！才能正常使用本插件！</h2>');
+	}
+	if(fw_version < 7.2){ //固件版本过低，不兼容
+		hide_elem();
+		E("warn_msg_1").style.display = "";
+		$('#warn_msg_1').html('<h2><font color="#FF9900">错误！</font></h2><h2>【科学上网】插件不可用！因为你的固件版本低于X7.2！</h2><h2>请前往<a href="http://koolshare.cn/forum-96-1.html" target="_blank"><u><em>【koolshare论坛】</em></u></a>下载并更新最新固件！</h2>');
+	}
+	if(db_ss["ss_basic_use_kcp"] == 1){
+		E("warn_msg_2").style.display = "";
+		$('#warn_msg_2').html('<h2><font color="#FF9900">提醒：</font>你开启了KCP加速，建议挂载虚拟内存以保证kcptun程序运行稳定！</h2>');
+	}
 }
 
 function hook_event() {
@@ -4368,8 +4411,8 @@ taobao.com
 											<input class="button_gen" type="button" onclick="save()" value="保存&应用">
 											<!--<input class="button_gen" type="button" onclick="save(1)" value="保存">-->
 										</div>
-										<div id="warn" style="display: none;font-size: 20px;position: static;" class="formfontdesc" id="cmdDesc"><i>你开启了kcptun,请先关闭后才能开启shadowsocks</i></div>
-										<div id="warn1" style="display: none;font-size: 20px;position: static;" class="formfontdesc" id="cmdDesc"><i>你开启了kcptun,请先关闭后才能开启shadowsocks</i></div>
+										<div id="warn_msg_1" style="display: none;text-align:center; line-height: 4em;"><i></i></div>
+										<div id="warn_msg_2" style="display: none;text-align:center; line-height: 4em;"><i></i></div>
 									</td>
 								</tr>
 							</table>

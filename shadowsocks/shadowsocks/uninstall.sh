@@ -44,6 +44,10 @@ rm -rf /koolshare/res/shadowsocks.css
 rm -rf /koolshare/res/gameV2.png
 rm -rf /koolshare/res/ss_proc_status.htm
 
+# remove start up command
+sed -i '/ssconfig.sh/d' /koolshare/scripts/nat-start >/dev/null 2>&1
+sed -i '/ssconfig.sh/d' /koolshare/scripts/nat-start >/dev/null 2>&1
+
 dbus remove softcenter_module_shadowsocks_home_url
 dbus remove softcenter_module_shadowsocks_install
 dbus remove softcenter_module_shadowsocks_md5
