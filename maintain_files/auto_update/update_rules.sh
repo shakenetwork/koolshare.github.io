@@ -52,7 +52,7 @@ echo =================
 
 wget -4 https://raw.githubusercontent.com/felixonmars/dnsmasq-china-list/master/accelerated-domains.china.conf
 
-cat accelerated-domains.china.conf | sed "s/server=\/\.//g" | sed "s/server=\///g" | sed -r "s/\/\S{1,30}//g" | sed -r "s/\/\S{1,30}//g" > cdn_download.txt
+cat accelerated-domains.china.conf | sed '/^#/d' |sed "s/server=\/\.//g" | sed "s/server=\///g" | sed -r "s/\/\S{1,30}//g" | sed -r "s/\/\S{1,30}//g" > cdn_download.txt
 cat cdn_koolshare.txt cdn_download.txt | sort -u > cdn1.txt
 
 md5sum5=$(md5sum cdn1.txt | sed 's/ /\n/g'| sed -n 1p)
